@@ -3,7 +3,8 @@
 
 ```bash
 $ cp .env.template .env
-$ docker compose up -d
+$ docker-compose build
+$ docker-compose up -d
 ```
 
 ## Gem & Package Install
