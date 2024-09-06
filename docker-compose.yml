@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:8.2.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3319:3306"
+
+  rails: &rails
+    build: .
+    image: backend_image:latest
+    command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    working_dir: /rails
+    stdin_open: true
+    tty: true
+    environment:
+      DB_USER: root
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_TEST_NAME: ${DB_TEST_NAME}
+      RAILS_ENV: ${RAILS_ENV}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+
+  runner:
+    <<: *rails
+    command: /bin/bash
+    profiles:
+      - manual
