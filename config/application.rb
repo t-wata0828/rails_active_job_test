@@ -42,5 +42,8 @@ module RailsActiveJobTest
     config.api_only = true
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore, key: "_rails_active_job_test_session"
   end
 end
