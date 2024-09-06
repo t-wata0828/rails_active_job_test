@@ -4,7 +4,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3319:3306"
+      - "3306:3306"
 
   rails: &rails
     build: .
@@ -16,6 +16,7 @@ services:
       - "3000:3000"
     depends_on:
       - db
+      - redis
     working_dir: /rails
     stdin_open: true
     tty: true
@@ -28,9 +29,21 @@ services:
       DB_TEST_NAME: ${DB_TEST_NAME}
       RAILS_ENV: ${RAILS_ENV}
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      REDIS_URL: redis://redis:6379/0
 
   runner:
     <<: *rails
     command: /bin/bash
     profiles:
       - manual
+
+  redis:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+
+  sidekiq:
+    <<: *rails
+    command: bundle exec sidekiq
+    ports:
+      - "3001:3001"
